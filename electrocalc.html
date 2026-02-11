@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#f0f2f5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3103/3103446.png">
+    <title>Electro Calc | Pro</title>
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --white: #ffffff;
+            --shadow: #d1d9e6;
+            --highlight: #ffffff;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text-main: #2d3436;
+            --text-muted: #8a929e;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            perspective: 1200px;
+        }
+        header h1 {
+            text-align: center;
+            font-weight: 900;
+            color: #b2bec3;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 1.4rem;
+            text-shadow: 1px 1px 0px var(--white);
+            margin-bottom: 30px;
+        }
+        .calc-body {
+            background: var(--bg);
+            padding: 25px;
+            border-radius: 35px;
+            box-shadow: 20px 20px 60px var(--shadow), -20px -20px 60px var(--highlight);
+            border: 1px solid rgba(255,255,255,0.7);
+            transform: rotateX(4deg);
+        }
+        .input-group {
+            background: #eef2f7;
+            padding: 15px 20px;
+            border-radius: 20px;
+            box-shadow: inset 5px 5px 10px var(--shadow), inset -5px -5px 10px var(--highlight);
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--accent);
+            outline: none;
+        }
+        .neu-select-wrap {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 0 10px;
+            box-shadow: 3px 3px 6px var(--shadow), -3px -3px 6px var(--highlight);
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        select {
+            width: 100%;
+            border: none;
+            background: transparent;
+            height: 40px;
+            font-weight: 700;
+            outline: none;
+            appearance: none;
+            cursor: pointer;
+        }
+        .btn-3d {
+            width: 100%;
+            padding: 18px;
+            border-radius: 18px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0px 8px 15px rgba(59, 130, 246, 0.3), inset 0px -4px 0px rgba(0,0,0,0.15);
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-3d:active { transform: translateY(3px); box-shadow: 0px 4px 8px rgba(59, 130, 246, 0.2); }
+        .results-container { display: none; margin-top: 20px; }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin: 35px 0 15px;
+            padding: 0 5px;
+        }
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-transform: none;
+            letter-spacing: -0.5px;
+        }
+        .small-ctrl {
+            width: 100px;
+            background: var(--bg);
+            padding: 4px 8px;
+            border-radius: 10px;
+            box-shadow: 3px 3px 6px var(--shadow), -3px -3px 6px var(--highlight);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        .small-ctrl select {
+            height: 28px;
+            font-size: 11px;
+            text-align: center;
+        }
+        .result-card {
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 25px;
+            box-shadow: 10px 10px 20px var(--shadow), -10px -10px 20px var(--highlight);
+            margin-bottom: 15px;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.02);
+        }
+        .result-row:last-child { border: none; }
+        .result-label { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+        .result-value { font-weight: 800; font-family: monospace; font-size: 15px; }
+        .highlight { color: var(--accent); }
+        .highlight-success { color: var(--success); }
+        .highlight-warn { color: var(--warning); }
+        .sub-group {
+            background: rgba(255,255,255,0.4);
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 18px;
+            box-shadow: inset 2px 2px 5px var(--shadow);
+        }
+        .sub-header {
+            font-size: 9px;
+            font-weight: 900;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .nested-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header><h1>Electro Calc</h1></header>
+
+    <div class="calc-body">
+        <div class="input-group">
+            <label>Connected Load (kW)</label>
+            <input type="number" id="power" placeholder="0.0" step="0.1" inputmode="decimal">
+        </div>
+        <div class="input-group">
+            <label>System Voltage</label>
+            <div class="neu-select-wrap">
+                <select id="phase">
+                    <option value="3">3 Phase (415V)</option>
+                    <option value="1">1 Phase (220V)</option>
+                </select>
+            </div>
+        </div>
+        <button class="btn-3d" onclick="calculate()">Calculate Now</button>
+    </div>
+
+    <div class="results-container" id="results">
+        <div class="section-header"><span class="section-title">System Overview</span></div>
+        <div class="result-card">
+            <div class="result-row"><span class="result-label">Full Load Current</span><span class="result-value highlight" id="flc">0 A</span></div>
+            <div class="result-row"><span class="result-label">Total Power</span><span class="result-value" id="kva">0 kVA</span></div>
+        </div>
+
+        <div class="section-header">
+            <span class="section-title">Cable Sizing</span>
+            <div class="small-ctrl">
+                <select id="cable_mat" onchange="calculate()">
+                    <option value="al">AL Wire</option>
+                    <option value="cu">CU Wire</option>
+                </select>
+            </div>
+        </div>
+        <div class="result-card">
+            <div class="result-row"><span class="result-label">Rec. Cable Size</span><span class="result-value highlight-success" id="cable-size">0 sq.mm</span></div>
+            <div class="result-row"><span class="result-label">Max Capacity</span><span class="result-value" id="cable-amp">0 A</span></div>
+        </div>
+
+        <div class="section-header"><span class="section-title">Protection & Starters</span></div>
+        <div class="result-card">
+            <div class="result-row"><span class="result-label">Main Breaker</span><span class="result-value highlight-warn" id="breaker">0 A</span></div>
+            <div class="result-row"><span class="result-label">Earth Wire</span><span class="result-value" id="pe-cable">0 sq.mm</span></div>
+            <div class="sub-group">
+                <span class="sub-header">Motor Starters</span>
+                <div class="nested-row"><span class="result-label">DOL Contactor</span><span class="result-value" id="starter-dol">0 A</span></div>
+                <div class="nested-row"><span class="result-label">S/D Main/Delta</span><span class="result-value" id="sd-main">0 A</span></div>
+                <div class="nested-row"><span class="result-label">S/D Star</span><span class="result-value" id="sd-star">0 A</span></div>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <span class="section-title">Transformer & Earth</span>
+            <div class="small-ctrl">
+                <select id="loading_factor" onchange="calculate()">
+                    <option value="0.7">70% Eff</option>
+                    <option value="0.8">80% Eff</option>
+                    <option value="0.9">90% Eff</option>
+                </select>
+            </div>
+        </div>
+        <div class="result-card">
+            <div class="result-row"><span class="result-label">Trafo Rating</span><span class="result-value highlight-warn" id="trafo-size">0 kVA</span></div>
+            <div class="sub-group">
+                <span class="sub-header">Earthing Strips</span>
+                <div class="nested-row"><span class="result-label">Copper Strip</span><span class="result-value" id="earth-cu">0 mm</span></div>
+                <div class="nested-row"><span class="result-label">AL Strip</span><span class="result-value" id="earth-al">0 mm</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const manifest = {
+        "name": "Electro Calc Pro",
+        "short_name": "ElectroCalc",
+        "start_url": ".",
+        "display": "standalone",
+        "background_color": "#f0f2f5",
+        "theme_color": "#3b82f6",
+        "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/3103/3103446.png", "sizes": "512x512", "type": "image/png" }]
+    };
+    const stringManifest = JSON.stringify(manifest);
+    const blobManifest = new Blob([stringManifest], {type: 'application/json'});
+    const manifestURL = URL.createObjectURL(blobManifest);
+    document.querySelector('head').insertAdjacentHTML('beforeend', `<link rel="manifest" href="${manifestURL}">`);
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            const swContent = `self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));`;
+            const blobSW = new Blob([swContent], { type: 'text/javascript' });
+            navigator.serviceWorker.register(URL.createObjectURL(blobSW));
+        });
+    }
+
+    function calculate() {
+        const kw = parseFloat(document.getElementById('power').value);
+        const phase = parseInt(document.getElementById('phase').value);
+        const cableMat = document.getElementById('cable_mat').value;
+        const loadingFactor = parseFloat(document.getElementById('loading_factor').value);
+        if (!kw || kw <= 0) return;
+
+        const pf = 0.85; 
+        let current = (phase === 1) ? (kw * 1000) / (220 * pf) : (kw * 1000) / (Math.sqrt(3) * 415 * pf);
+        let kva = kw / pf;
+
+        const cuTable = [{ a: 18, s: 1.5 }, { a: 26, s: 2.5 }, { a: 36, s: 4 }, { a: 48, s: 6 }, { a: 68, s: 10 }, { a: 88, s: 16 }, { a: 115, s: 25 }, { a: 145, s: 35 }, { a: 175, s: 50 }, { a: 220, s: 70 }, { a: 270, s: 95 }, { a: 310, s: 120 }, { a: 360, s: 150 }, { a: 450, s: 240 }, { a: 550, s: 300 }];
+        const alTable = [{ a: 15, s: 2.5 }, { a: 20, s: 4 }, { a: 28, s: 6 }, { a: 40, s: 10 }, { a: 54, s: 16 }, { a: 72, s: 25 }, { a: 90, s: 35 }, { a: 110, s: 50 }, { a: 140, s: 70 }, { a: 175, s: 95 }, { a: 205, s: 120 }, { a: 235, s: 150 }, { a: 280, s: 185 }, { a: 330, s: 240 }, { a: 400, s: 300 }];
+
+        const selectedTable = cableMat === 'cu' ? cuTable : alTable;
+        let cableSize = 0, cableCapacity = 0;
+        for (let row of selectedTable) { if (current <= row.a) { cableSize = row.s; cableCapacity = row.a; break; } }
+        if(cableSize === 0) cableSize = ">300";
+
+        let peSize = (typeof cableSize === 'number') ? (cableSize <= 16 ? cableSize : cableSize <= 35 ? 16 : cableSize / 2) : "Consult";
+        
+        let breakerCurrent = current * 1.25;
+        const breakers = [6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 630, 800, 1000];
+        let breakerSize = breakers.find(b => breakerCurrent <= b) || "Custom";
+
+        let reqTrafo = kva / loadingFactor;
+        const trafoSizes = [25, 40, 63, 100, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500];
+        let recTrafo = trafoSizes.find(t => reqTrafo <= t) || "Custom";
+
+        let eCu = "N/A", eAl = "N/A";
+        if(typeof recTrafo === 'number'){
+            if(recTrafo <= 100) { eCu = "25x3"; eAl = "25x6"; }
+            else if(recTrafo <= 250) { eCu = "25x6"; eAl = "40x6"; }
+            else if(recTrafo <= 400) { eCu = "32x6"; eAl = "50x6"; }
+            else if(recTrafo <= 630) { eCu = "50x6"; eAl = "65x8"; }
+            else if(recTrafo <= 800) { eCu = "50x8"; eAl = "75x10"; }
+            else if(recTrafo <= 1250) { eCu = "65x8"; eAl = "75x12"; }
+            else { eCu = "75x10"; eAl = "100x12"; }
+        }
+
+        document.getElementById('flc').innerText = current.toFixed(1) + " A";
+        document.getElementById('kva').innerText = kva.toFixed(2) + " kVA";
+        document.getElementById('cable-size').innerText = cableSize + " sq.mm";
+        document.getElementById('cable-amp').innerText = cableCapacity + " A";
+        document.getElementById('breaker').innerText = breakerSize + " A";
+        document.getElementById('pe-cable').innerText = peSize + " sq.mm";
+        document.getElementById('starter-dol').innerText = current.toFixed(1) + " A";
+        document.getElementById('sd-main').innerText = (current * 0.58).toFixed(1) + " A";
+        document.getElementById('sd-star').innerText = (current * 0.33).toFixed(1) + " A";
+        document.getElementById('trafo-size').innerText = recTrafo + " kVA";
+        document.getElementById('earth-cu').innerText = eCu + " mm";
+        document.getElementById('earth-al').innerText = eAl + " mm";
+        document.getElementById('results').style.display = 'block';
+    }
+</script>
+</body>
+</html>
